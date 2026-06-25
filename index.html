@@ -13,43 +13,27 @@ body{
     font-family: Arial;
 }
 
-/* Header */
-.header{
-    background: rgba(13,110,253,0.9);
-    color:white;
-    padding:25px;
-    border-radius:18px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.1);
-}
-
-/* Cards */
 .card{
-    border: none;
-    border-radius:18px;
-    box-shadow:0 8px 25px rgba(0,0,0,0.08);
-    backdrop-filter: blur(6px);
+    border:none;
+    border-radius:16px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.08);
 }
 
-/* Stats */
+.header{
+    background:#0d6efd;
+    color:white;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+}
+
 .stat{
-    font-size:26px;
+    font-size:24px;
     font-weight:bold;
 }
 
-/* Inputs */
-input, select{
-    border-radius:12px !important;
-    padding:10px !important;
-}
-
-/* Buttons */
-.btn{
-    border-radius:12px;
-}
-
-/* Table */
 table{
-    border-radius:12px;
+    border-radius:10px;
     overflow:hidden;
 }
 
@@ -58,20 +42,7 @@ thead{
     color:white;
 }
 
-tbody tr:hover{
-    background:#f1f5ff;
-}
-
-/* Badges */
-.badge-step{
-    background:#0d6efd;
-    padding:6px 10px;
-    border-radius:10px;
-}
-
-.badge-alcpt{
-    background:#198754;
-    padding:6px 10px;
+.btn{
     border-radius:10px;
 }
 </style>
@@ -81,55 +52,25 @@ tbody tr:hover{
 
 <div class="container py-4">
 
-<!-- HEADER -->
-<div class="header text-center mb-4">
-<h2>📚 قاموس الكلمات الذكي</h2>
-<p>STEP & ALCPT Vocabulary App</p>
+<div class="header mb-4">
+<h2>📚 قاموس STEP & ALCPT</h2>
 </div>
 
-<!-- STATS -->
-<div class="row mb-4">
+<!-- INPUT -->
+<div class="card p-3 mb-3">
 
-<div class="col-md-4 mb-3">
-<div class="card p-3 text-center">
-<div class="stat text-primary" id="totalWords">0</div>
-<div>إجمالي الكلمات</div>
-</div>
-</div>
-
-<div class="col-md-4 mb-3">
-<div class="card p-3 text-center">
-<div class="stat text-primary" id="stepCount">0</div>
-<div>STEP</div>
-</div>
-</div>
-
-<div class="col-md-4 mb-3">
-<div class="card p-3 text-center">
-<div class="stat text-success" id="alcptCount">0</div>
-<div>ALCPT</div>
-</div>
-</div>
-
-</div>
-
-<!-- ADD -->
-<div class="card p-4 mb-4">
-
-<h5 class="mb-3">➕ إضافة كلمة جديدة</h5>
-
-<div class="row g-3">
+<div class="row g-2">
 
 <div class="col-md-3">
 <input id="word" class="form-control" placeholder="Word">
 </div>
 
 <div class="col-md-3">
-<input id="meaning" class="form-control" placeholder="المعنى">
+<input id="meaning" class="form-control" placeholder="Meaning">
 </div>
 
 <div class="col-md-4">
-<input id="sentence" class="form-control" placeholder="Example Sentence">
+<input id="sentence" class="form-control" placeholder="Sentence">
 </div>
 
 <div class="col-md-2">
@@ -139,27 +80,25 @@ tbody tr:hover{
 </select>
 </div>
 
-<div class="col-12">
-<button class="btn btn-primary w-100" onclick="addWord()">
-حفظ الكلمة
-</button>
 </div>
 
-</div>
+<button class="btn btn-primary w-100 mt-2" onclick="addWord()">
+إضافة كلمة
+</button>
 
 </div>
 
 <!-- SEARCH -->
-<div class="card p-3 mb-4">
+<div class="card p-3 mb-3">
 
 <div class="row g-2">
 
 <div class="col-md-6">
-<input id="search" class="form-control" placeholder="🔎 بحث..." onkeyup="renderTable()">
+<input id="search" class="form-control" placeholder="بحث..." onkeyup="render()">
 </div>
 
 <div class="col-md-3">
-<select id="filter" class="form-select" onchange="renderTable()">
+<select id="filter" class="form-select" onchange="render()">
 <option value="ALL">كل التصنيفات</option>
 <option value="STEP">STEP</option>
 <option value="ALCPT">ALCPT</option>
@@ -167,9 +106,7 @@ tbody tr:hover{
 </div>
 
 <div class="col-md-3">
-<button class="btn btn-success w-100" onclick="exportData()">
-⬇ تصدير
-</button>
+<button class="btn btn-success w-100" onclick="exportData()">تصدير</button>
 </div>
 
 </div>
@@ -179,10 +116,7 @@ tbody tr:hover{
 <!-- TABLE -->
 <div class="card p-3">
 
-<div class="table-responsive">
-
-<table class="table table-hover align-middle">
-
+<table class="table table-hover">
 <thead>
 <tr>
 <th>#</th>
@@ -195,10 +129,7 @@ tbody tr:hover{
 </thead>
 
 <tbody id="tableBody"></tbody>
-
 </table>
-
-</div>
 
 </div>
 
@@ -206,10 +137,11 @@ tbody tr:hover{
 
 <script>
 
+<!-- ✅ IMPORTANT: LOAD DATA FROM LOCAL STORAGE -->
 let words = JSON.parse(localStorage.getItem("wordsDB")) || [];
 
-function save(){
-localStorage.setItem("wordsDB", JSON.stringify(words));
+function saveData(){
+    localStorage.setItem("wordsDB", JSON.stringify(words));
 }
 
 function addWord(){
@@ -220,21 +152,22 @@ let sentence = document.getElementById("sentence").value.trim();
 let category = document.getElementById("category").value;
 
 if(!word || !meaning){
-alert("أدخل كلمة ومعنى");
+alert("أدخل الكلمة والمعنى");
 return;
 }
 
 words.push({
-id:Date.now(),
+id: Date.now(),
 word,
 meaning,
 sentence,
 category
 });
 
-save();
+saveData(); // ✅ حفظ دائم
+
 clearInputs();
-renderTable();
+render();
 }
 
 function clearInputs(){
@@ -243,7 +176,7 @@ document.getElementById("meaning").value="";
 document.getElementById("sentence").value="";
 }
 
-function renderTable(){
+function render(){
 
 let search = document.getElementById("search").value.toLowerCase();
 let filter = document.getElementById("filter").value;
@@ -263,54 +196,25 @@ html += `
 <td>${w.word}</td>
 <td>${w.meaning}</td>
 <td>${w.sentence}</td>
+<td>${w.category}</td>
 <td>
-<span class="${w.category==='STEP'?'badge-step':'badge-alcpt'}">
-${w.category}
-</span>
-</td>
-<td>
-<button class="btn btn-warning btn-sm" onclick="editWord(${w.id})">✏</button>
-<button class="btn btn-danger btn-sm" onclick="deleteWord(${w.id})">🗑</button>
+<button class="btn btn-danger btn-sm" onclick="deleteWord(${w.id})">حذف</button>
 </td>
 </tr>
 `;
+
 });
 
 document.getElementById("tableBody").innerHTML = html;
-
-updateStats();
 }
 
 function deleteWord(id){
-words = words.filter(w=>w.id!==id);
-save();
-renderTable();
-}
 
-function editWord(id){
+words = words.filter(w=>w.id !== id);
 
-let w = words.find(x=>x.id===id);
+saveData(); // ✅ حفظ بعد الحذف
 
-let newWord = prompt("Word", w.word);
-if(newWord===null) return;
-
-let newMeaning = prompt("Meaning", w.meaning);
-let newSentence = prompt("Sentence", w.sentence);
-
-w.word = newWord;
-w.meaning = newMeaning;
-w.sentence = newSentence;
-
-save();
-renderTable();
-}
-
-function updateStats(){
-
-document.getElementById("totalWords").innerText = words.length;
-document.getElementById("stepCount").innerText = words.filter(w=>w.category==="STEP").length;
-document.getElementById("alcptCount").innerText = words.filter(w=>w.category==="ALCPT").length;
-
+render();
 }
 
 function exportData(){
@@ -323,7 +227,7 @@ a.download = "dictionary.json";
 a.click();
 }
 
-renderTable();
+render();
 
 </script>
 
